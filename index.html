@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#171323">
+<title>DOOM MOD HUB</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0f0d18;color:#f7f4ff;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:720px;margin:auto;padding:18px}
+header{background:linear-gradient(135deg,#211832,#171323);border:1px solid #493267;border-radius:20px;padding:22px;margin-bottom:18px}
+h1{margin:0;font-size:28px}header p{color:#c9b8e8;margin:8px 0 0}
+input,button{font:inherit;border-radius:12px;padding:13px;border:1px solid #514166}
+input{width:100%;background:#1b1726;color:white;outline:none;margin:8px 0 12px}
+button{background:#8b5cf6;color:white;border:0;font-weight:700;cursor:pointer}
+button.secondary{background:#30283d;color:#eee}
+.meta{color:#b9adc9;font-size:13px;margin:5px 2px 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.game{background:#1b1726;border:1px solid #382d49;border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px}
+.game .emoji{font-size:28px}.game strong{display:block}.game small{color:#b9adc9}
+.add{display:flex;gap:8px;margin-top:20px}.add input{margin:0;min-width:0}.add button{white-space:nowrap}
+footer{color:#8e829f;text-align:center;font-size:12px;margin:22px 0}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>☠️ DOOM MOD HUB</h1>
+  <p>مكتبة ألعاب تضم 397+ عنواناً — ابحث واكتشف وأضف ألعابك</p>
+</header>
+<input id="search" type="search" placeholder="ابحث عن لعبة... مثال: grany أو My Singing Monsters" autocomplete="off">
+<div class="meta" id="count"></div>
+<section class="grid" id="games"></section>
+<section>
+  <h3>＋ إضافة لعبة للقائمة</h3>
+  <div class="add">
+    <input id="newGame" placeholder="اكتب اسم اللعبة">
+    <button id="addBtn">إضافة</button>
+  </div>
+</section>
+<footer>DOOM MOD HUB • مكتبة ألعاب مستقلة • الروابط الرسمية فقط</footer>
+</main>
+<script>
+const defaults = [
+  'Granny',
+  'Granny 2',
+  'Granny 3',
+  'My Singing Monsters',
+  'Ice Scream',
+  'Ice Scream 2',
+  'Ice Scream 3',
+  'Ice Scream 4',
+  'Ice Scream 5',
+  'Ice Scream 6',
+  'Evil Nun',
+  'Evil Nun 2',
+  'The Baby in Yellow',
+  'Poppy Playtime',
+  'Poppy Playtime Chapter 2',
+  'Poppy Playtime Chapter 3',
+  'Poppy Playtime Chapter 4',
+  "Five Nights at Freddy's",
+  'FNAF 2',
+  'FNAF 3',
+  'FNAF 4',
+  'Sister Location',
+  'Security Breach',
+  'Minecraft',
+  'Roblox',
+  'Subway Surfers',
+  'Shadow Fight 2',
+  'Shadow Fight 3',
+  'Shadow Fight 4',
+  'Plants vs. Zombies',
+  'Plants vs. Zombies 2',
+  'Temple Run',
+  'Temple Run 2',
+  'Among Us',
+  'Geometry Dash',
+  'Geometry Dash Lite',
+  'Hill Climb Racing',
+  'Hill Climb Racing 2',
+  'Angry Birds',
+  'Angry Birds 2',
+  'Angry Birds Friends',
+  'Pou',
+  'Talking Tom',
+  'Talking Tom 2',
+  'My Talking Angela',
+  'My Talking Angela 2',
+  'My Talking Tom Friends',
+  'Stumble Guys',
+  'Fall Guys',
+  'Brawl Stars',
+  'Clash of Clans',
+  'Clash Royale',
+  'Hay Day',
+  'Boom Beach',
+  'Squad Busters',
+  'Call of Duty Mobile',
+  'PUBG Mobile',
+  'Free Fire',
+  'Mobile Legends: Bang Bang',
+  'League of Legends: Wild Rift',
+  'Arena of Valor',
+  'Asphalt 8',
+  'Asphalt 9',
+  'Asphalt Legends Unite',
+  'Real Racing 3',
+  'Need for Speed No Limits',
+  'CarX Drift Racing 2',
+  'Car Parking Multiplayer',
+  'Drive Zone Online',
+  'Traffic Rider',
+  'Traffic Racer',
+  'Drift Max Pro',
+  'Beach Buggy Racing 2',
+  'Mario Kart Tour',
+  'Sonic Dash',
+  'Sonic Forces',
+  'Sonic the Hedgehog Classic',
+  'Crossy Road',
+  'Jetpack Joyride',
+  'Fruit Ninja',
+  'Cut the Rope',
+  "Where's My Water?",
+  'Plants vs Zombies Heroes',
+  'Bloons TD 6',
+  'Kingdom Rush',
+  'Kingdom Rush Frontiers',
+  'Kingdom Rush Origins',
+  'Kingdom Rush Vengeance',
+  'The Battle of Polytopia',
+  'Clash Mini',
+  'Terraria',
+  'Stardew Valley',
+  "Don't Starve: Pocket Edition",
+  'Crashlands',
+  'Pocket City',
+  'TheoTown',
+  'SimCity BuildIt',
+  'Township',
+  'Family Farm Adventure',
+  'Gardenscapes',
+  'Homescapes',
+  'Royal Match',
+  'Candy Crush Saga',
+  'Candy Crush Soda Saga',
+  'Toon Blast',
+  'Toy Blast',
+  'Fishdom',
+  'Matchington Mansion',
+  'Merge Mansion',
+  'Monopoly GO!',
+  'UNO!',
+  'Ludo King',
+  'Chess.com',
+  '8 Ball Pool',
+  'Golf Battle',
+  'Archery King',
+  'Bowmasters',
+  'Rodeo Stampede',
+  'Hungry Shark Evolution',
+  'Hungry Shark World',
+  'Survivor.io',
+  'Vampire Survivors',
+  'Archero',
+  'Brotato',
+  'Soul Knight',
+  'Otherworld Legends',
+  'Dead Cells',
+  'Castlevania: Symphony of the Night',
+  'The Walking Zombie 2',
+  'Into the Dead',
+  'Into the Dead 2',
+  'Dead Trigger 2',
+  'Unkilled',
+  'Plants vs. Zombies Garden Warfare',
+  'Genshin Impact',
+  'Honkai: Star Rail',
+  'Honkai Impact 3rd',
+  'Zenless Zone Zero',
+  'Wuthering Waves',
+  'Tower of Fantasy',
+  'Sky: Children of the Light',
+  'LifeAfter',
+  'Identity V',
+  '第五人格',
+  'Asphalt Nitro',
+  'Gangstar Vegas',
+  'Gangstar New Orleans',
+  'Payback 2',
+  'MadOut2 BigCityOnline',
+  'Dude Theft Wars',
+  'Grand Theft Auto: San Andreas',
+  'Bully: Anniversary Edition',
+  'Max Payne Mobile',
+  'Minecraft Dungeons',
+  'LEGO Star Wars: The Complete Saga',
+  'LEGO Jurassic World',
+  'LEGO Marvel Super Heroes',
+  'SpongeBob: Krusty Cook-Off',
+  'SpongeBob Adventures: In A Jam',
+  'Nickelodeon All-Star Brawl',
+  'Disney Magic Kingdoms',
+  'Disney Speedstorm',
+  'Disney Emoji Blitz',
+  'Pokémon GO',
+  'Pokémon UNITE',
+  'Pokémon Quest',
+  'Pokémon TCG Pocket',
+  'Monster Legends',
+  'Dragon City',
+  'Dragon Mania Legends',
+  'Jurassic World Alive',
+  'Jurassic World The Game',
+  'Animal Crossing: Pocket Camp',
+  'The Sims FreePlay',
+  'The Sims Mobile',
+  'BitLife',
+  'Choices: Stories You Play',
+  'Episode',
+  'Avakin Life',
+  'ZEPETO',
+  'PK XD',
+  'Play Together',
+  'Toca Life World',
+  'Dr. Driving',
+  'Dr. Parking 4',
+  'Earn to Die 2',
+  'Earn to Die Rogue',
+  'RFS - Real Flight Simulator',
+  'Infinite Flight',
+  'Flight Pilot Simulator 3D',
+  'Bus Simulator: Ultimate',
+  'Truckers of Europe 3',
+  'Euro Truck Driver',
+  'Farming Simulator 23',
+  'Farming Simulator 20',
+  'Construction Simulator 3',
+  'Plague Inc.',
+  'Rebel Inc.',
+  'Mini Metro',
+  'Mini Motorways',
+  'Unblock Me',
+  '2048',
+  'Sudoku.com',
+  'Wordscapes',
+  'Brain Test',
+  'Brain Test 2',
+  'Brain Out',
+  'The Room',
+  'The Room Two',
+  'Monument Valley',
+  'Monument Valley 2',
+  "Alto's Adventure",
+  "Alto's Odyssey",
+  'Limbo',
+  'Very Little Nightmares',
+  'Little Nightmares',
+  'Hello Neighbor',
+  'Hello Neighbor 2',
+  'Secret Neighbor',
+  "Baldi's Basics",
+  'Amanda the Adventurer',
+  'Bendy and the Ink Machine',
+  'Bendy and the Dark Revival',
+  'Dark Riddle',
+  'Specimen Zero',
+  'Death Park',
+  'Death Park 2',
+  'CASE: Animatronics',
+  'Reporter',
+  'Reporter 2',
+  'Forgotten Memories',
+  'Eyes: The Horror Game',
+  'Slendrina: The Cellar',
+  'Slendrina 2D',
+  'Mr Meat',
+  'Mr Meat 2',
+  'Scary Teacher 3D',
+  'Scary Stranger 3D',
+  'Dentist Bling',
+  'Perfect Slices',
+  'Satisgame',
+  'Good Pizza, Great Pizza',
+  'Cooking Fever',
+  'Cooking Madness',
+  'Diner DASH Adventures',
+  'World Chef',
+  "Cooking Mama: Let's cook!",
+  "Papa's Pizzeria To Go!",
+  "Papa's Freezeria To Go!",
+  "Papa's Burgeria To Go!",
+  'Sonic Rumble',
+  'Minecraft Education',
+  'Terraria: Mobile',
+  'The Escapists 2',
+  'Prison Empire Tycoon',
+  'Pocket Build',
+  'WorldBox',
+  'Melon Sandbox',
+  'People Playground',
+  'Stickman Hook',
+  'Stick War: Legacy',
+  'Stick War 3',
+  'Supreme Duelist',
+  'Ragdoll Playground',
+  'Kick the Buddy',
+  'Sandbox',
+  'Human: Fall Flat',
+  'Goat Simulator',
+  'Octodad: Dadliest Catch',
+  'Totally Reliable Delivery Service',
+  'Gang Beasts',
+  'Party Animals',
+  'Rocket League Sideswipe',
+  'eFootball',
+  'EA SPORTS FC Mobile',
+  'Dream League Soccer',
+  'Score! Hero',
+  'Score! Match',
+  'Top Eleven',
+  'Soccer Stars',
+  'Head Ball 2',
+  'World Soccer Champs',
+  'Retro Bowl',
+  'Madden NFL Mobile',
+  'NBA 2K Mobile',
+  'Basketball Stars',
+  'Golf Clash',
+  'Tennis Clash',
+  'WWE SuperCard',
+  'WWE Mayhem',
+  'Real Boxing 2',
+  'EA SPORTS UFC',
+  'Minecraft Trial',
+  'LEGO DUPLO WORLD',
+  'PBS KIDS Games',
+  'Khan Academy Kids',
+  'Sago Mini World',
+  'Dr. Panda Town',
+  'Pepi House',
+  'Pepi Super Stores',
+  'My Town: Home',
+  'My City: Home',
+  'Toca Kitchen 2',
+  'Toca Boca Jr',
+  'Crayola Create and Play',
+  "LEGO Builder's Journey",
+  'Monument Valley 3',
+  'Angry Birds Dream Blast',
+  'Angry Birds Journey',
+  'Bad Piggies',
+  "Where's My Perry?",
+  'Ski Safari',
+  'Ski Safari 2',
+  'Riptide GP: Renegade',
+  'Vector',
+  'Vector 2',
+  'N.O.V.A. Legacy',
+  'Modern Combat 5',
+  'Critical Ops',
+  'Standoff 2',
+  'Combat Master',
+  'Bullet Echo',
+  'Zooba',
+  'Zooba: Zoo Battle Arena',
+  'T3 Arena',
+  'FRAG Pro Shooter',
+  'Farlight 84',
+  'War Robots',
+  'World of Tanks Blitz',
+  'World of Warships Blitz',
+  'Mech Arena',
+  'Thetan Arena',
+  'Last Day on Earth',
+  'Dawn of Zombies',
+  'State of Survival',
+  '白荆回廊',
+  'AFK Journey',
+  'AFK Arena',
+  'Raid: Shadow Legends',
+  'Summoners War',
+  'Epic Seven',
+  'CookieRun: Kingdom',
+  'CookieRun: OvenBreak',
+  'Guardian Tales',
+  'Another Eden',
+  'Octopath Traveler: Champions of the Continent',
+  'Final Fantasy Brave Exvius',
+  'Final Fantasy VII Ever Crisis',
+  'Dragon Quest Tact',
+  'Fire Emblem Heroes',
+  'Dragalia Lost',
+  'Marvel Snap',
+  'DC Worlds Collide',
+  'Injustice 2',
+  'Marvel Contest of Champions',
+  'Mortal Kombat Mobile',
+  'Skullgirls',
+  'Brawlhalla',
+  'Dan the Man',
+  'Oddmar',
+  'Ninja Arashi',
+  'Ninja Arashi 2',
+  'Ronin: The Last Samurai',
+  'Grimvalor',
+  "Pascal's Wager",
+  'ICEY',
+  'Implosion: Never Lose Hope',
+  'Soulcalibur',
+  'Streets of Rage 4',
+  "TMNT: Shredder's Revenge",
+  'Huntdown',
+  'Door Kickers: Action Squad',
+  'Badland',
+  'Badland 2',
+  "Leo's Fortune",
+  'Rayman Adventures',
+  'Rayman Mini',
+  'Lara Croft GO',
+  'Hitman GO',
+  'Deus Ex GO',
+  'Agent A: A puzzle in disguise',
+  'Machinarium',
+  'Samorost 3',
+  'Botanicula',
+  'Hidden Folks',
+  'Tiny Room Stories',
+  'Cube Escape: Paradox',
+  'Rusty Lake Hotel',
+  'Rusty Lake Paradise',
+  'The Past Within',
+  'Doors: Awakening',
+  'Escape Simulator',
+  'Can You Escape',
+  '100 Doors',
+  'The House of Da Vinci',
+  'The House of Da Vinci 2',
+  'The House of Da Vinci 3'
+];
+let custom=[];
+try{custom=JSON.parse(localStorage.getItem("doom_custom_games")||"[]")}catch(e){}
+const $=id=>document.getElementById(id);
+const normalize=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");
+function distance(a,b){
+ const row=Array.from({length:b.length+1},(_,i)=>i);
+ for(let i=1;i<=a.length;i++){
+  let prev=row[0];row[0]=i;
+  for(let j=1;j<=b.length;j++){
+   const old=row[j];
+   row[j]=Math.min(row[j]+1,row[j-1]+1,prev+(a[i-1]===b[j-1]?0:1));
+   prev=old;
+  }
+ }
+ return row[b.length];
+}
+function render(){
+ const q=normalize($("search").value.trim());
+ const all=[...defaults,...custom];
+ const results=all.filter(name=>{
+  if(!q)return true;
+  const n=normalize(name);
+  return n.includes(q)||q.includes(n)||(q.length>=4&&distance(n,q)<=1);
+ });
+ $("count").textContent=`${results.length} من ${all.length} لعبة`;
+ $("games").innerHTML="";
+ if(!results.length){$("games").innerHTML='<p class="meta">لم يتم العثور على اللعبة. يمكنك إضافتها من الأسفل.</p>';return}
+ results.forEach(name=>{
+  const card=document.createElement("article");card.className="game";
+  const emoji=name.toLowerCase().includes("singing")?"🎵":name.toLowerCase().includes("granny")?"👵":"🎮";
+  const icon=document.createElement("span");icon.className="emoji";icon.textContent=emoji;
+  const info=document.createElement("div");
+  const title=document.createElement("strong");title.textContent=name;
+  const sub=document.createElement("small");sub.textContent="ضمن مكتبة الألعاب";
+  info.append(title,sub);card.append(icon,info);$("games").append(card);
+ });
+}
+$("search").addEventListener("input",render);
+function addGame(){
+ const name=$("newGame").value.trim();
+ if(!name)return;
+ const all=[...defaults,...custom];
+ if(all.some(g=>normalize(g)===normalize(name))){$("newGame").value="";return}
+ custom.push(name);
+ localStorage.setItem("doom_custom_games",JSON.stringify(custom));
+ $("newGame").value="";render();
+}
+$("addBtn").addEventListener("click",addGame);
+$("newGame").addEventListener("keydown",e=>{if(e.key==="Enter")addGame()});
+render();
+</script>
+</body>
+</html>
